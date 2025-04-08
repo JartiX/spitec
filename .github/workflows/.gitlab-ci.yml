@@ -41,8 +41,6 @@ jobs:
         run: |
           curl -sSL https://install.python-poetry.org | python3 -
           echo "$HOME/.local/bin" >> $GITHUB_PATH
-          export PATH="$HOME/.local/bin:$PATH"
-          poetry --version
       - name: Install project dependencies via Poetry
         run: poetry install
 
@@ -58,9 +56,9 @@ jobs:
           if [ ! -d "./logging" ]; then
             mkdir logging
           fi
-      - name: Start application via Dash (without gunicorn)
+      - name: Start application via Waitress
         run: |
-          nohup poetry run python main.py > ./logging/log.txt 2>&1 &
+          nohup poetry run python wsgi.py > ./logging/log.txt 2>&1 &
           COUNTER=0
           while ! lsof -i :8050 > /dev/null; do
             if [ $COUNTER -ge 15 ]; then
