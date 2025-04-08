@@ -33,11 +33,15 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
+      - name: Install system dependencies for h5py
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libhdf5-dev
       - name: Install Poetry
         run: |
           curl -sSL https://install.python-poetry.org | python3 -
           echo "$HOME/.local/bin" >> $GITHUB_PATH
-      - name: Install dependencies via Poetry
+      - name: Install project dependencies via Poetry
         run: poetry install
 
   start_app:
