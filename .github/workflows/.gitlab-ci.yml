@@ -70,8 +70,3 @@ jobs:
           done
           echo "Application started successfully."
           sleep 10
-      - name: Upload log artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: application-log
-          path: ./logging/log.txt
