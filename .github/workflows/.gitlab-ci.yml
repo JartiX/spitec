@@ -45,18 +45,29 @@ jobs:
         run: poetry install
 
   start_app:
-    - name: Start application via Dash (without gunicorn)
-      run: |
-        nohup poetry run python main.py > ./logging/log.txt 2>&1 &
-        COUNTER=0
-        while ! lsof -i :8050 > /dev/null; do
-          if [ $COUNTER -ge 15 ]; then
-            echo "Port 8050 is not in use. Exiting with failure."
-            cat ./logging/log.txt || echo "No log file"
-            exit 1
+    name: Start Application
+    runs-on: ubuntu-22.04
+    needs: install_deps
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Create logging directory if not exists
+        run: |
+          if [ ! -d "./logging" ]; then
+            mkdir logging
           fi
-          sleep 1
-          COUNTER=$((COUNTER+1))
-        done
-        echo "Application started successfully."
+      - name: Start application via Dash (without gunicorn)
+        run: |
+          nohup poetry run python main.py > ./logging/log.txt 2>&1 &
+          COUNTER=0
+          while ! lsof -i :8050 > /dev/null; do
+            if [ $COUNTER -ge 15 ]; then
+              echo "Port 8050 is not in use. Exiting with failure."
+              cat ./logging/log.txt || echo "No log file"
+              exit 1
+            fi
+            sleep 1
+            COUNTER=$((COUNTER+1))
+          done
+          echo "Application started successfully."
 
