@@ -8,7 +8,7 @@ on:
 jobs:
   stop_app:
     name: Stop Application
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -24,7 +24,7 @@ jobs:
 
   install_deps:
     name: Install Dependencies
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: stop_app
     steps:
       - name: Checkout repository
@@ -46,7 +46,7 @@ jobs:
 
   start_app:
     name: Start Application
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: install_deps
     steps:
       - name: Checkout repository
@@ -71,7 +71,7 @@ jobs:
           echo "Application started successfully."
           sleep 10
       - name: Upload log artifact
-        uses: actions/upload-artifact@v3.1.2
+        uses: actions/upload-artifact@v3
         with:
           name: application-log
           path: ./logging/log.txt
