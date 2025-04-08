@@ -45,28 +45,18 @@ jobs:
         run: poetry install
 
   start_app:
-    name: Start Application
-    runs-on: ubuntu-22.04
-    needs: install_deps
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Create logging directory if not exists
-        run: |
-          if [ ! -d "./logging" ]; then
-            mkdir logging
+    - name: Start application via Dash (without gunicorn)
+      run: |
+        nohup poetry run python main.py > ./logging/log.txt 2>&1 &
+        COUNTER=0
+        while ! lsof -i :8050 > /dev/null; do
+          if [ $COUNTER -ge 15 ]; then
+            echo "Port 8050 is not in use. Exiting with failure."
+            cat ./logging/log.txt || echo "No log file"
+            exit 1
           fi
-      - name: Start application via Gunicorn
-        run: |
-          nohup poetry run gunicorn -w 4 -b 0.0.0.0:8050 --pid /tmp/gunicorn.pid main:server > ./logging/log.txt 2>&1 &
-          COUNTER=0
-          while [ ! -f /tmp/gunicorn.pid ]; do
-            if [ $COUNTER -ge 15 ]; then
-              echo "PID file not created within timeout. Exiting with failure."
-              exit 1
-            fi
-            sleep 1
-            COUNTER=$((COUNTER+1))
-          done
-          echo "Application started successfully."
-          sleep 10
+          sleep 1
+          COUNTER=$((COUNTER+1))
+        done
+        echo "Application started successfully."
+
