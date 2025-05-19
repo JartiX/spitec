@@ -68,6 +68,7 @@ jobs:
 
       - name: Start application via Waitress
         run: |
+          export PATH="$HOME/.local/bin:$PATH"
           nohup poetry run python wsgi.py > ./logging/log.txt 2>&1 &
           COUNTER=0
           while ! lsof -i :8050 > /dev/null; do
