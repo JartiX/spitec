@@ -64,10 +64,15 @@ jobs:
 
       - name: Install project dependencies via Poetry
         run: poetry install --all-extras
-        
+
       - name: Create logging directory if not exists
         run: |
           mkdir -p logging
+
+      - name: Create /var/spitec/data
+        run: |
+          sudo mkdir -p /var/spitec/data
+          sudo chown $USER:$USER /var/spitec /var/spitec/data
 
       - name: Start application via Waitress
         run: |
