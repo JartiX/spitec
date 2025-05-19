@@ -43,7 +43,7 @@ jobs:
           echo "$HOME/.local/bin" >> $GITHUB_PATH
       - name: Install project dependencies via Poetry
         run: poetry install
-
+        
   start_app:
     name: Start Application
     runs-on: ubuntu-22.04
@@ -51,11 +51,21 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
       - name: Create logging directory if not exists
         run: |
-          if [ ! -d "./logging" ]; then
-            mkdir logging
-          fi
+          mkdir -p logging
+
       - name: Start application via Waitress
         run: |
           nohup poetry run python wsgi.py > ./logging/log.txt 2>&1 &
@@ -70,4 +80,3 @@ jobs:
             COUNTER=$((COUNTER+1))
           done
           echo "Application started successfully."
-
