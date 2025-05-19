@@ -80,3 +80,9 @@ jobs:
             COUNTER=$((COUNTER+1))
           done
           echo "Application started successfully."
+          
+      - name: Show application log on failure
+        if: failure()
+        run: |
+          echo "=== Application Log ==="
+          cat ./logging/log.txt || echo "Log file not found"
